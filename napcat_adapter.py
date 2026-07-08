@@ -552,7 +552,7 @@ class NapCat适配器(BasePlatformAdapter):
         附加配置 = 配置.extra or {}
 
         # ── 反向 WS 配置 ──
-        self._反向主机: str = 附加配置.get("reverse_host", "0.0.0.0")
+        self._反向主机: str = 附加配置.get("reverse_host", "127.0.0.1")
         self._反向端口: int = int(附加配置.get("reverse_port", 6700))
         self._访问令牌: str = 附加配置.get("access_token", "") or os.getenv("NAPCAT_ACCESS_TOKEN", "")
 
