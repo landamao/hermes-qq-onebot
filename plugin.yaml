@@ -1,6 +1,6 @@
 name: napcat
 kind: platform
-version: 2.1.4
+version: 2.1.5
 description: >
   NapCat QQ 适配器 — 基于 OneBot v11 协议。
   支持 NapCat / go-cqhttp / Lagrange.OneBot / LLOneBot 等兼容实现。
