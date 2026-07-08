@@ -51,6 +51,12 @@ def 检查依赖() -> bool:
         return True
     except ImportError:
         return False
+
+
+def _is_loopback_host(主机: str) -> bool:
+    return 主机 in ("127.0.0.1", "localhost", "::1")
+
+
 # ── 常量 ──────────────────────────────────────────────────────────────────
 消息最大长度 = 4500
 默认合并转发阈值 = 800
@@ -552,7 +558,7 @@ class NapCat适配器(BasePlatformAdapter):
         附加配置 = 配置.extra or {}
 
         # ── 反向 WS 配置 ──
-        self._反向主机: str = 附加配置.get("reverse_host", "0.0.0.0")
+        self._反向主机: str = 附加配置.get("reverse_host", "127.0.0.1")
         self._反向端口: int = int(附加配置.get("reverse_port", 6700))
         self._访问令牌: str = 附加配置.get("access_token", "") or os.getenv("NAPCAT_ACCESS_TOKEN", "")
 
@@ -644,6 +650,8 @@ class NapCat适配器(BasePlatformAdapter):
 
     async def connect(self, *, is_reconnect: bool = False) -> bool:
         """启动反向 WS 服务端，等待 NapCat 连接。"""
+        if not self._访问令牌 and not _is_loopback_host(self._反向主机):
+            raise RuntimeError("反向 WebSocket 公开监听时必须配置 access_token")
         self._反向服务 = _反向WebSocket服务(self._接口调用器, self._处理WS事件)
         await self._反向服务.启动(self._反向主机, self._反向端口, self._访问令牌)
         self._mark_connected()

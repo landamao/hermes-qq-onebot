@@ -109,7 +109,7 @@ platforms:
   napcat:
     enabled: true
     extra:
-      reverse_host: "0.0.0.0"              # 监听地址
+      reverse_host: "127.0.0.1"            # 监听地址；公开监听时必须设置 access_token
       reverse_port: 6700                    # 监听端口
       access_token: ""                      # 访问令牌（可选）
       http_api_url: "http://127.0.0.1:5700" # HTTP API（推荐开启）

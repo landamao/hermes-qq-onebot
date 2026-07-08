@@ -109,7 +109,7 @@ platforms:
   napcat:
     enabled: true
     extra:
-      reverse_host: "0.0.0.0"              # Listen address
+      reverse_host: "127.0.0.1"            # Listen address; public binds require access_token
       reverse_port: 6700                    # Listen port
       access_token: ""                      # Access token (optional)
       http_api_url: "http://127.0.0.1:5700" # HTTP API (recommended)
