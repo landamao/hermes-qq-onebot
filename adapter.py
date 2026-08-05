@@ -65,7 +65,7 @@ def register(ctx):
         max_message_length=0,
         # 显示
         emoji="🐱",
-        # QQ 用户 ID 需要脱敏
+        # LLM 可见真实 QQ 号（@人、查群成员等需要真实 ID）
         pii_safe=False,
         allow_update_command=True,
         # LLM 提示
