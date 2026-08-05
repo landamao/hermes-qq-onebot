@@ -1,11 +1,15 @@
 name: napcat
 kind: platform
-version: 3.0.0
+version: 3.1.0
 description: >
   NapCat QQ 适配器 — 基于 OneBot v11 协议。
   支持 NapCat / go-cqhttp / Lagrange.OneBot / LLOneBot 等兼容实现。
   中文变量名，代码结构清晰。
   支持表情回应、关键词触发、合并转发等。
+  附带 LLM 工具：napcat_send_message（发消息）、napcat_call_action（调用任意 OneBot API）。
 author: 懒大猫
 homepage: https://github.com/landamao/hermes-qq-onebot
 requires_env: []
+provides_tools:
+  - napcat_send_message
+  - napcat_call_action

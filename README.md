@@ -6,7 +6,7 @@
 
 [![Hermes Plugin](https://img.shields.io/badge/Hermes-Platform%20Plugin-7c3aed?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiPjxwYXRoIGQ9Ik0xMiAyTDIuNSA3djEwTDEyIDIybDkuNS0yVjciLz48L3N2Zz4=)](https://hermes-agent.nousresearch.com/docs)
 [![OneBot v11](https://img.shields.io/badge/OneBot-v11-1677ff?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIi8+PC9zdmc+)](https://github.com/botuniverse/onebot)
-[![Version](https://img.shields.io/badge/version-3.0.0-green)](./plugin.yaml)
+[![Version](https://img.shields.io/badge/version-3.1.0-green)](./plugin.yaml)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
 **语言 / Language：** [中文](README.md) | [English](README_EN.md)
@@ -127,10 +127,11 @@ hermes gateway restart
 ```
 napcat/
 ├── plugin.yaml        # 插件元数据
-├── adapter.py         # 注册入口（register 函数）
+├── adapter.py         # 注册入口（register 函数 + _创建适配器 工厂）
 ├── main.py            # 适配器主体（NapCat适配器 类）
 ├── ws.py              # 反向 WS 服务端（WS 类）
 ├── napcat_http.py     # HTTP API 调用器（NapcatHttp 类）
+├── llm_tools.py       # LLM 工具（napcat_send_message + napcat_call_action）
 └── tools.py           # 常量、LRU缓存、媒体下载、消息段构建/解析
 ```
 
@@ -148,6 +149,7 @@ napcat/
 | 引用回复 | 解析被引用的原文并截断，保留完整媒体标签 |
 | 长消息合并转发 | 群聊超阈值自动合并，CQ 码拆分为独立节点 |
 | 表情回应 / 戳一戳 | 默认关闭，按需开启 |
+| LLM 工具 | Agent 可主动发消息、调用 OneBot API（见下方 LLM 工具） |
 
 ### 📎 媒体支持
 
@@ -172,6 +174,19 @@ Agent 直接在回复文本里写 CQ 码，适配器自动解析发送：
 ```
 
 **支持的 CQ 码：** `[CQ:at]` · `[CQ:image]` · `[CQ:record]` · `[CQ:video]` · `[CQ:file]` · `[CQ:face]` · 以及更多 OneBot v11 标准 CQ 码
+
+---
+
+## 🤖 LLM 工具
+
+v3.1.0 新增两个 LLM 工具，注册到 `napcat` toolset。网关运行时 Agent 可主动调用，直接复用适配器实例的 WS 连接和发送逻辑：
+
+| 工具 | 说明 |
+|:-----|:-----|
+| `napcat_send_message` | 向群聊/私聊发送消息，支持 CQ 码，复用适配器的合并转发/拆分逻辑 |
+| `napcat_call_action` | 调用 OneBot API：群历史消息、私聊历史消息、撤回消息、发文件、群成员列表等 |
+
+工具通过适配器工厂函数存入模块级变量 `_适配器实例`，直接复用已建立的连接，无需通过框架获取。`check_fn` 检查适配器是否已初始化——网关未运行时工具不出现。
 
 ---
 
@@ -387,6 +402,19 @@ v3.0.0 是对 v2.1.x 的重构升级，功能逻辑一致，以下为详细差�
 
 ---
 
-## 📄 许可证
+## 📋 更新日志
+
+### v3.1.0
+
+- 新增 LLM 工具 `napcat_send_message`：Agent 可主动向群聊/私聊发送消息，复用适配器的 CQ 码处理、合并转发、长消息拆分逻辑
+- 新增 LLM 工具 `napcat_call_action`：调用 OneBot API（群历史消息、私聊历史消息、撤回消息、发文件、群成员列表等）
+- 工具直接复用适配器实例的 WS 连接和 HTTP 调用器，通过工厂函数存入模块级变量 `_适配器实例`，无需通过框架获取
+- `check_fn` 检查适配器是否已初始化——网关未运行时工具不出现
+
+### v3.0.0
+
+- 重构适配器架构，模块化拆分为 adapter/main/ws/napcat_http/tools 五个文件
+- 反向 WS 监听地址默认 127.0.0.1（仅本地），白名单为空时拒绝所有用户
+- 配置类型校验、环境变量 JSON 解析、合并转发阈值、引用文本截断等改进
 
 MIT License © [懒大猫](https://github.com/landamao)

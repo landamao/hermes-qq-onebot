@@ -7,6 +7,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# 运行时适配器实例引用（由 _创建适配器 工厂函数设置）
+# 工具函数通过此引用直接复用适配器的 WS 连接 / HTTP 调用器 / 发送逻辑
+_适配器实例 = None
+
 
 def _检查依赖() -> bool:
     """检查运行时依赖是否可用。"""
@@ -27,14 +31,28 @@ def _是否已连接(配置) -> bool:
     return 配置.enabled
 
 
-def register(ctx):
-    """插件入口 — 由 Hermes 插件系统调用。"""
+def _创建适配器(配置):
+    """适配器工厂 — 创建实例时存一份引用供 LLM 工具复用。"""
+    global _适配器实例
     from .main import NapCat适配器
+    _适配器实例 = NapCat适配器(配置)
+    return _适配器实例
 
+
+def register(ctx):
+    """插件入口 — 由 Hermes 插件系统调用。
+
+    同时注册：
+    1. 平台适配器（QQ 收发消息的网关适配器）
+    2. LLM 工具（让 Agent 主动发消息、调用 OneBot API）
+    """
+    from .llm_tools import 工具列表, _检查可用
+
+    # ── 注册平台适配器 ──
     ctx.register_platform(
         name="napcat",
         label="NapCat (QQ)",
-        adapter_factory=lambda 配置: NapCat适配器(配置),
+        adapter_factory=_创建适配器,
         check_fn=_检查依赖,
         validate_config=_验证配置,
         is_connected=_是否已连接,
@@ -58,3 +76,15 @@ def register(ctx):
             "格式：[CQ:image,file=/path/to/file]，直接写在消息文本中即可。"
         ),
     )
+
+    # ── 注册 LLM 工具 ──
+    for 工具名, schema, handler, emoji in 工具列表:
+        ctx.register_tool(
+            name=工具名,
+            toolset="napcat",
+            schema=schema,
+            handler=handler,
+            check_fn=_检查可用,
+            is_async=True,
+            emoji=emoji,
+        )
