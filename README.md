@@ -1,25 +1,128 @@
-# NapCat QQ 适配器
+<div align="center">
 
-> **语言 / Language：** [中文](README.md) | [English](README_EN.md)
+# Hermes-QQ-OneBot
 
-基于 OneBot v11 协议的 QQ 平台适配器，为 Hermes Agent 添加 QQ 支持。
+**Hermes Agent × QQ — 让 AI 在 QQ 里活起来**
 
-支持 NapCat / go-cqhttp / Lagrange.OneBot / LLOneBot 等兼容实现。
+[![Hermes Plugin](https://img.shields.io/badge/Hermes-Platform%20Plugin-7c3aed?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiPjxwYXRoIGQ9Ik0xMiAyTDIuNSA3djEwTDEyIDIybDkuNS0yVjciLz48L3N2Zz4=)](https://hermes-agent.nousresearch.com/docs)
+[![OneBot v11](https://img.shields.io/badge/OneBot-v11-1677ff?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIi8+PC9zdmc+)](https://github.com/botuniverse/onebot)
+[![Version](https://img.shields.io/badge/version-3.0.0-green)](./plugin.yaml)
+[![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
-## 架构
+**语言 / Language：** [中文](README.md) | [English](README_EN.md)
+
+*基于 OneBot v11 协议的 QQ 平台适配器，为 [Hermes Agent](https://github.com/NousResearch/hermes-agent) 接入 QQ 生态*
+
+</div>
+
+---
+
+## ✨ 亮点
+
+<table>
+<tr>
+<td width="50%">
+
+### 🔌 即装即用
+一行命令安装启用，反向 WebSocket 零配置连接，NapCat 主动连过来
+
+</td>
+<td width="50%">
+
+### 🧩 纯插件设计
+不动 Hermes 一行源码，安装即生效，卸载即干净，零侵入
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 📦 CQ 码原生支持
+Agent 直接在文本里写 `[CQ:image,file=...]` 发送复杂消息，无需额外 API
+
+</td>
+<td width="50%">
+
+### 🛡️ 按需下载媒体
+只在被唤醒时下载媒体，闲聊消息不碰磁盘，超限只保留 URL 由 Agent 按需取用
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### ✂️ 长消息合并转发
+群聊超长回复自动合并转发，CQ 码智能拆分为独立消息节点
+
+</td>
+<td width="50%">
+
+### 🔑 关键词触发
+正则匹配群聊消息自动响应，不用 @ 也能唤醒 Agent
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🏗️ 架构
 
 ```
-QQ 客户端 ←→ NapCat (OneBot 实现)
-                  ↓ 反向 WebSocket (NapCat 主动连过来)
-             NapCat 适配器 (hermes-qq-onebot)
-                  ↓ 可选 HTTP API (图片发送、文件获取)
-             OneBot API
+📱 QQ 客户端
+      ↕
+🌊 NapCat / Lagrange / go-cqhttp / LLOneBot  (OneBot v11 实现)
+      ↓ 反向 WebSocket (主动连接适配器)
+🔌 hermes-qq-onebot
+      ↓
+🤖 Hermes Agent (完整 AI 能力: 终端/浏览器/文件/搜索/...)
 ```
 
-- **反向 WebSocket**：适配器起 server，NapCat 主动连接
-- **HTTP API**：可选但推荐，解决图片发送超时、文件获取等问题
+> **反向 WebSocket** — 适配器起 Server，OneBot 实现主动连过来，无需公网 IP，无需开放端口。
+>
+> **HTTP API** — 可选但推荐，解决图片发送超时、文件获取等问题。
 
-## 模块结构
+---
+
+## 🚀 安装
+
+```bash
+hermes plugins install landamao/hermes-qq-onebot --enable
+```
+
+搞定！现在配置 NapCat 连接过来就行。
+
+<details>
+<summary>🔧 手动安装</summary>
+
+```bash
+# 克隆到 Hermes 插件目录
+git clone https://github.com/landamao/hermes-qq-onebot.git ~/.hermes/plugins/napcat
+
+# 安装依赖
+pip install websockets
+
+# 重启网关
+hermes gateway restart
+```
+</details>
+
+---
+
+## 📋 兼容的 OneBot 实现
+
+| 实现 | 状态 | 说明 |
+|:-----|:----:|:-----|
+| [NapCat](https://github.com/NapNeko/NapCatQQ) | ✅ 首选 | 推荐使用，功能最全面 |
+| [Lagrange.OneBot](https://github.com/LagrangeDev/Lagrange.Core) | ✅ 兼容 | 正常工作 |
+| [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) | ⚠️ 旧版 | 可用但已停止维护 |
+| [LLOneBot](https://github.com/LLOneBot/LLOneBot) | ✅ 兼容 | 正常工作 |
+
+> 只要符合 OneBot v11 标准的实现都能用～
+
+---
+
+## 📁 模块结构
 
 ```
 napcat/
@@ -31,72 +134,50 @@ napcat/
 └── tools.py           # 常量、LRU缓存、媒体下载、消息段构建/解析
 ```
 
-## 安装
+---
 
-```bash
-hermes plugins install landamao/hermes-qq-onebot --enable
-```
+## 🎯 功能一览
 
-## 消息标签格式
+### 💬 消息能力
 
-每种媒体都带详细信息，Agent 可直接获取路径或 URL：
+| 功能 | 说明 |
+|:-----|:-----|
+| 私聊 / 群聊 | 双模式消息收发 |
+| @ 提及检测 | 被 @ 自动响应 |
+| 关键词触发 | 正则匹配，不 @ 也能唤醒 |
+| 引用回复 | 解析被引用的原文并截断，保留完整媒体标签 |
+| 长消息合并转发 | 群聊超阈值自动合并，CQ 码拆分为独立节点 |
+| 表情回应 / 戳一戳 | 默认关闭，按需开启 |
 
-| 类型 | 标签格式 |
-|------|----------|
-| 图片 | `[图片:file=/tmp/xxx.jpg]` 或 `[图片:url=https://...]` |
-| 语音 | `[语音:file=/tmp/xxx.ogg]` 或 `[语音:url=https://...]` |
-| 视频 | `[视频:url=https://...]` 或 `[视频:file=/tmp/xxx.mp4]` |
-| 文件 | `[文件:name=report.pdf,file=/tmp/xxx]` 或 `[文件:name=report.pdf,url=https://...]` |
-| 表情 | `[表情:id=123]` |
-| @提及 | `@昵称(QQ:123456)` |
+### 📎 媒体支持
 
-## CQ 码支持
+| 类型 | 接收 | 发送 | 消息标签 |
+|:-----|:----:|:----:|:---------|
+| 🖼️ 图片 | ✅ | ✅ | `[图片:file=/tmp/xxx.jpg]` 或 `[图片:url=https://...]` |
+| 🎤 语音 | ✅ | ✅ | `[语音:file=/tmp/xxx.ogg]` 或 `[语音:url=https://...]` |
+| 🎬 视频 | ✅ | ✅ | `[视频:url=https://...]` 或 `[视频:file=/tmp/xxx.mp4]` |
+| 📄 文件 | ✅ | ✅ | `[文件:name=report.pdf,file=/tmp/xxx]` |
+| 😊 表情 | ✅ | ✅ | `[表情:id=123]` |
+| 📢 @ 提及 | ✅ | ✅ | `@昵称(QQ:123456)` → `[CQ:at,qq=123]` |
 
-Agent 可通过 CQ 码直接发送复杂消息，直接写在消息文本中即可：
+> Agent 看到的是带路径/URL 的结构化标签，不需要额外处理就能拿到文件。
+
+### 📤 CQ 码发送
+
+Agent 直接在回复文本里写 CQ 码，适配器自动解析发送：
 
 ```
 看看这个 [CQ:image,file=/tmp/test.jpg]
-```
-
-```
 这是你要的文件 [CQ:file,file=/tmp/document.pdf,name=文档.pdf]
 ```
 
-**支持的 CQ 码类型：**
-- `[CQ:at,qq=123]` — @某人
-- `[CQ:image,file=路径或URL]` — 发送图片
-- `[CQ:record,file=路径或URL]` — 发送语音
-- `[CQ:video,file=路径或URL]` — 发送视频
-- `[CQ:file,file=路径或URL,name=文件名]` — 发送文件
-- `[CQ:face,id=123]` — 发送表情
-- 更多 CQ 码参考 OneBot v11 文档
+**支持的 CQ 码：** `[CQ:at]` · `[CQ:image]` · `[CQ:record]` · `[CQ:video]` · `[CQ:file]` · `[CQ:face]` · 以及更多 OneBot v11 标准 CQ 码
 
-## 下载限制
+---
 
-超过配置体积的媒体不自动下载，只保留 URL，Agent 需要时再下载：
+## ⚙️ 配置
 
-```yaml
-extra:
-  download_limits:
-    image: 10MB       # 支持 B/KB/MB/GB，不区分大小写
-    record: 50MB
-    video: 100MB
-    file: 50MB
-```
-
-## 功能
-
-- 私聊 / 群聊消息收发
-- @提及检测 + 关键词触发
-- 图片、语音、文件收发
-- 回复消息解析（带智能截断，保留完整媒体标签）
-- 长消息自动拆分 + 合并转发 (群聊，CQ码自动提取为独立普通消息发送)
-- 用户白名单（默认拒绝，需显式配置）
-- emoji 表情回应 / 戳一戳 (默认关闭)
-
-## 配置
-
-`~/.hermes/config.yaml`：
+在 `~/.hermes/config.yaml` 中添加：
 
 ```yaml
 platforms:
@@ -148,9 +229,10 @@ platforms:
       emoji_react: false                # 收到消息后随机回应表情（默认 false）
 ```
 
-## 环境变量 (可选)
+<details>
+<summary>🌍 环境变量覆盖</summary>
 
-所有配置项都可以通过环境变量覆盖。变量名 = `NAPCAT_` + 配置键名大写。
+所有配置项都可通过环境变量覆盖。变量名 = `NAPCAT_` + 配置键名大写。
 
 优先级：环境变量 > config.yaml > 默认值
 
@@ -191,10 +273,13 @@ NAPCAT_ALLOWED_USERS=123456,789012
 # 允许所有用户（设置为 true 时跳过白名单）
 NAPCAT_ALLOW_ALL_USERS=false
 ```
+</details>
 
-## NapCat 端配置
+---
 
-在 NapCat 的配置文件中设置反向 WS 连接：
+## 🔗 NapCat 端配置
+
+在 NapCat 配置文件中设置反向 WS 连接：
 
 ```json
 {
@@ -207,9 +292,11 @@ NAPCAT_ALLOW_ALL_USERS=false
 }
 ```
 
-如果配置了 `access_token`，NapCat 端也需要设置相同的 token。
+> 如果配置了 `access_token`，NapCat 端也需要设置相同的 token。
 
-## 启动信息
+---
+
+## 📟 启动信息
 
 Hermes 默认日志级别为 WARNING，`logger.info()` 用户看不到，容易误以为插件没加载。因此不频繁的重要 info 日志（连接/断开/启动/异常）同时 `print()` 到终端；频繁的（收发消息）不加 print。
 
@@ -226,12 +313,27 @@ Hermes 默认日志级别为 WARNING，`logger.info()` 用户看不到，容易�
 [NapCat插件] 配置: 关键词触发模式数=2
 ```
 
-## 卸载
+---
+
+## 🗑️ 卸载
 
 ```bash
 rm -rf ~/.hermes/plugins/napcat
 hermes gateway restart
 ```
+
+---
+
+## 🧩 作为 Hermes 插件
+
+本项目是一个 Hermes Agent 平台适配器插件，注册到 Hermes 插件系统后自动生效：
+
+- **插件名：** `napcat`
+- **类型：** `platform`
+- **注册平台：** `napcat` (NapCat QQ)
+- **依赖：** `websockets`
+
+插件入口自动注册平台适配器到 Hermes 网关，无需手动干预。
 
 ---
 
@@ -282,3 +384,9 @@ v3.0.0 是对 v2.1.x 的重构升级，功能逻辑一致，以下为详细差�
 - **配置项别名**：`reverse_token` 作为 `access_token` 别名；`NAPCAT_ALLOWED_USERS` 作为白名单备用环境变量
 
 </details>
+
+---
+
+## 📄 许可证
+
+MIT License © [懒大猫](https://github.com/landamao)

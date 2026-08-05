@@ -1,25 +1,128 @@
-# NapCat QQ Adapter
+<div align="center">
 
-> **Language / 语言：** [中文](README.md) | [English](README_EN.md)
+# Hermes-QQ-OneBot
 
-A QQ platform adapter based on the OneBot v11 protocol, adding QQ support to Hermes Agent.
+**Hermes Agent × QQ — Bringing AI to Life on QQ**
 
-Supports NapCat / go-cqhttp / Lagrange.OneBot / LLOneBot and other compatible implementations.
+[![Hermes Plugin](https://img.shields.io/badge/Hermes-Platform%20Plugin-7c3aed?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiPjxwYXRoIGQ9Ik0xMiAyTDIuNSA3djEwTDEyIDIybDkuNS0yVjciLz48L3N2Zz4=)](https://hermes-agent.nousresearch.com/docs)
+[![OneBot v11](https://img.shields.io/badge/OneBot-v11-1677ff?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIi8+PC9zdmc+)](https://github.com/botuniverse/onebot)
+[![Version](https://img.shields.io/badge/version-3.0.0-green)](./plugin.yaml)
+[![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
-## Architecture
+**Language / 语言：** [中文](README.md) | [English](README_EN.md)
+
+*A QQ platform adapter based on the OneBot v11 protocol, bringing QQ connectivity to [Hermes Agent](https://github.com/NousResearch/hermes-agent)*
+
+</div>
+
+---
+
+## ✨ Highlights
+
+<table>
+<tr>
+<td width="50%">
+
+### 🔌 Plug & Play
+One command to install and enable. Reverse WebSocket needs zero config — NapCat connects to you
+
+</td>
+<td width="50%">
+
+### 🧩 Pure Plugin Design
+Doesn't touch a line of Hermes source. Install to activate, remove to clean up — zero intrusion
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 📦 Native CQ Code Support
+Agent writes `[CQ:image,file=...]` directly in text to send complex messages — no extra API needed
+
+</td>
+<td width="50%">
+
+### 🛡️ On-Demand Media Download
+Media is only downloaded when the Agent is invoked. Idle messages never touch disk. Oversized items keep URL only for Agent to fetch as needed
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### ✂️ Long Message Merged Forwarding
+Group chat replies exceeding the threshold are auto-merged. CQ codes are smartly split into independent message nodes
+
+</td>
+<td width="50%">
+
+### 🔑 Keyword Triggers
+Regex matching auto-responds to group chat messages — no @mention needed to wake the Agent
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🏗️ Architecture
 
 ```
-QQ Client ←→ NapCat (OneBot implementation)
-                  ↓ Reverse WebSocket (NapCat connects to us)
-             NapCat Adapter (hermes-qq-onebot)
-                  ↓ Optional HTTP API (image sending, file retrieval)
-             OneBot API
+📱 QQ Client
+      ↕
+🌊 NapCat / Lagrange / go-cqhttp / LLOneBot  (OneBot v11 implementations)
+      ↓ Reverse WebSocket (connects to adapter)
+🔌 hermes-qq-onebot
+      ↓
+🤖 Hermes Agent (full AI capabilities: terminal/browser/files/search/...)
 ```
 
-- **Reverse WebSocket**: The adapter runs a server; NapCat connects to it
-- **HTTP API**: Optional but recommended, resolves image send timeouts, file retrieval, etc.
+> **Reverse WebSocket** — The adapter runs a server; OneBot implementations connect to it. No public IP or open ports needed.
+>
+> **HTTP API** — Optional but recommended, resolves image send timeouts, file retrieval, etc.
 
-## Module Structure
+---
+
+## 🚀 Installation
+
+```bash
+hermes plugins install landamao/hermes-qq-onebot --enable
+```
+
+Done! Now just configure NapCat to connect.
+
+<details>
+<summary>🔧 Manual Installation</summary>
+
+```bash
+# Clone into Hermes plugins directory
+git clone https://github.com/landamao/hermes-qq-onebot.git ~/.hermes/plugins/napcat
+
+# Install dependencies
+pip install websockets
+
+# Restart gateway
+hermes gateway restart
+```
+</details>
+
+---
+
+## 📋 Compatible OneBot Implementations
+
+| Implementation | Status | Notes |
+|:---------------|:------:|:------|
+| [NapCat](https://github.com/NapNeko/NapCatQQ) | ✅ Recommended | Best feature support |
+| [Lagrange.OneBot](https://github.com/LagrangeDev/Lagrange.Core) | ✅ Compatible | Works fine |
+| [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) | ⚠️ Legacy | Usable but no longer maintained |
+| [LLOneBot](https://github.com/LLOneBot/LLOneBot) | ✅ Compatible | Works fine |
+
+> Any implementation conforming to the OneBot v11 standard works!
+
+---
+
+## 📁 Module Structure
 
 ```
 napcat/
@@ -31,72 +134,50 @@ napcat/
 └── tools.py           # Constants, LRU cache, media download, message segment build/parse
 ```
 
-## Installation
+---
 
-```bash
-hermes plugins install landamao/hermes-qq-onebot --enable
-```
+## 🎯 Feature Overview
 
-## Message Tag Format
+### 💬 Messaging
 
-Each media type carries detailed info so the Agent can access paths or URLs directly:
+| Feature | Description |
+|:--------|:------------|
+| Private / Group chat | Dual-mode message send & receive |
+| @Mention detection | Auto-respond when mentioned |
+| Keyword triggers | Regex matching — no @mention needed to wake Agent |
+| Reply quoting | Parses quoted original text with smart truncation, preserves full media tags |
+| Long message merged forwarding | Group chat auto-merges above threshold; CQ codes split into independent nodes |
+| Emoji reactions / poke | Disabled by default, enable on demand |
 
-| Type | Tag Format |
-|------|-----------|
-| Image | `[图片:file=/tmp/xxx.jpg]` or `[图片:url=https://...]` |
-| Voice | `[语音:file=/tmp/xxx.ogg]` or `[语音:url=https://...]` |
-| Video | `[视频:url=https://...]` or `[视频:file=/tmp/xxx.mp4]` |
-| File | `[文件:name=report.pdf,file=/tmp/xxx]` or `[文件:name=report.pdf,url=https://...]` |
-| Emoji | `[表情:id=123]` |
-| @Mention | `@Nickname(QQ:123456)` |
+### 📎 Media Support
 
-## CQ Code Support
+| Type | Receive | Send | Message Tag |
+|:-----|:-------:|:----:|:------------|
+| 🖼️ Image | ✅ | ✅ | `[图片:file=/tmp/xxx.jpg]` or `[图片:url=https://...]` |
+| 🎤 Voice | ✅ | ✅ | `[语音:file=/tmp/xxx.ogg]` or `[语音:url=https://...]` |
+| 🎬 Video | ✅ | ✅ | `[视频:url=https://...]` or `[视频:file=/tmp/xxx.mp4]` |
+| 📄 File | ✅ | ✅ | `[文件:name=report.pdf,file=/tmp/xxx]` |
+| 😊 Emoji | ✅ | ✅ | `[表情:id=123]` |
+| 📢 @Mention | ✅ | ✅ | `@Nickname(QQ:123456)` → `[CQ:at,qq=123]` |
 
-The Agent can send complex messages via CQ codes — just write them inline in the message text:
+> The Agent sees structured tags with paths/URLs — no extra processing needed to access files.
+
+### 📤 CQ Code Sending
+
+The Agent writes CQ codes directly in reply text; the adapter auto-parses and sends:
 
 ```
 Check this out [CQ:image,file=/tmp/test.jpg]
-```
-
-```
 Here's the file you wanted [CQ:file,file=/tmp/document.pdf,name=文档.pdf]
 ```
 
-**Supported CQ code types:**
-- `[CQ:at,qq=123]` — @someone
-- `[CQ:image,file=path_or_URL]` — Send image
-- `[CQ:record,file=path_or_URL]` — Send voice
-- `[CQ:video,file=path_or_URL]` — Send video
-- `[CQ:file,file=path_or_URL,name=filename]` — Send file
-- `[CQ:face,id=123]` — Send emoji
-- See OneBot v11 docs for more CQ codes
+**Supported CQ codes:** `[CQ:at]` · `[CQ:image]` · `[CQ:record]` · `[CQ:video]` · `[CQ:file]` · `[CQ:face]` · and more OneBot v11 standard CQ codes
 
-## Download Limits
+---
 
-Media exceeding the configured size is not auto-downloaded; only the URL is kept. The Agent downloads it on demand:
+## ⚙️ Configuration
 
-```yaml
-extra:
-  download_limits:
-    image: 10MB       # Supports B/KB/MB/GB, case-insensitive
-    record: 50MB
-    video: 100MB
-    file: 50MB
-```
-
-## Features
-
-- Private chat / group chat message send & receive
-- @Mention detection + keyword triggers
-- Image, voice, file send & receive
-- Reply message parsing (with smart truncation, preserving full media tags)
-- Long message auto-split + merged forwarding (group chat; CQ codes extracted as standalone normal messages)
-- User whitelist (deny by default, must configure explicitly)
-- Emoji reactions / poke (disabled by default)
-
-## Configuration
-
-`~/.hermes/config.yaml`:
+Add to `~/.hermes/config.yaml`:
 
 ```yaml
 platforms:
@@ -148,7 +229,8 @@ platforms:
       emoji_react: false                # Random emoji reaction on message receive (default false)
 ```
 
-## Environment Variables (optional)
+<details>
+<summary>🌍 Environment Variable Overrides</summary>
 
 All config items can be overridden via environment variables. Variable name = `NAPCAT_` + config key uppercased.
 
@@ -191,10 +273,13 @@ NAPCAT_ALLOWED_USERS=123456,789012
 # Allow all users (set to true to skip whitelist)
 NAPCAT_ALLOW_ALL_USERS=false
 ```
+</details>
 
-## NapCat Side Configuration
+---
 
-Set up reverse WS connection in NapCat's config file:
+## 🔗 NapCat Side Configuration
+
+Set up reverse WS connection in NapCat's config:
 
 ```json
 {
@@ -207,9 +292,11 @@ Set up reverse WS connection in NapCat's config file:
 }
 ```
 
-If you configured `access_token`, NapCat must also set the same token.
+> If you configured `access_token`, NapCat must also set the same token.
 
-## Startup Output
+---
+
+## 📟 Startup Output
 
 Hermes' default log level is WARNING; `logger.info()` output is invisible to users, which can cause the false impression that the plugin isn't loaded. Therefore infrequent important info logs (connect/disconnect/startup/exception) also `print()` to the terminal; frequent ones (message send/receive) don't print.
 
@@ -226,12 +313,27 @@ A config summary is printed at startup for easy troubleshooting:
 [NapCat插件] 配置: 关键词触发模式数=2
 ```
 
-## Uninstall
+---
+
+## 🗑️ Uninstall
 
 ```bash
 rm -rf ~/.hermes/plugins/napcat
 hermes gateway restart
 ```
+
+---
+
+## 🧩 As a Hermes Plugin
+
+This project is a Hermes Agent platform adapter plugin. Once registered with the Hermes plugin system, it activates automatically:
+
+- **Plugin name:** `napcat`
+- **Kind:** `platform`
+- **Registered platform:** `napcat` (NapCat QQ)
+- **Dependencies:** `websockets`
+
+The plugin entry auto-registers the platform adapter with the Hermes gateway — no manual intervention needed.
 
 ---
 
@@ -282,3 +384,9 @@ v3.0.0 is a refactored upgrade from v2.1.x with identical functionality. Details
 - **Config aliases**: `reverse_token` as alias for `access_token`; `NAPCAT_ALLOWED_USERS` as fallback env var for whitelist
 
 </details>
+
+---
+
+## 📄 License
+
+MIT License © [懒大猫](https://github.com/landamao)
