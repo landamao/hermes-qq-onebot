@@ -1,5 +1,7 @@
 # NapCat QQ 适配器
 
+> **语言 / Language：** [中文](README.md) | [English](README_EN.md)
+
 基于 OneBot v11 协议的 QQ 平台适配器，为 Hermes Agent 添加 QQ 支持。
 
 支持 NapCat / go-cqhttp / Lagrange.OneBot / LLOneBot 等兼容实现。
@@ -253,7 +255,8 @@ hermes gateway restart
 
 ---
 
-## 与 v2.x 旧版的差异
+<details>
+<summary><b>📖 与 v2.x 旧版的差异（点击展开）</b></summary>
 
 v3.0.0 是对 v2.1.x 的重构升级，功能逻辑一致，以下为详细差异：
 
@@ -337,3 +340,5 @@ v3.0.0 是对 v2.1.x 的重构升级，功能逻辑一致，以下为详细差�
 
 - **新**：`reverse_token` 作为 `access_token` 的别名（优先级低于 `access_token`）
 - **新**：`NAPCAT_ALLOWED_USERS` 作为 `NAPCAT_ALLOWED_QQ_IDS` 的备用环境变量（仅在 config 未设 `allowed_qq_ids` 时生效）
+
+</details>
