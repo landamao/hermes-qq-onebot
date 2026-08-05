@@ -106,12 +106,12 @@ platforms:
       # ── 反向 WS 配置 ──
       reverse_host: "127.0.0.1"          # 监听地址（默认 127.0.0.1，仅本地）
       reverse_port: 6700                  # 监听端口（默认 6700）
-      access_token: ""                   # 访问令牌（可选，用于认证 NapCat 连接）
-      # 也可用 reverse_token 作为别名
+      access_token: ""                    # 访问令牌（可选，用于认证 NapCat 连接）
+      # reverse_token 可作为 access_token 的别名
 
-      # ── HTTP API（可选，推荐开启）──
+      # ── HTTP API（推荐开启）──
       http_api_url: "http://127.0.0.1:5700"  # OneBot HTTP API 地址
-      http_api_token: ""                      # HTTP 令牌（默认与 access_token 相同）
+      http_api_token: ""                      # HTTP 令牌（默认同 access_token）
 
       # ── 机器人信息 ──
       bot_self_id: ""                     # 机器人 QQ 号（可选，会从消息中自动学习）
@@ -120,18 +120,18 @@ platforms:
       # 有 file_size 时超限不下载，只保留 URL
       # 支持 B/KB/MB/GB（不区分大小写）
       download_limits:
-        image: 10MB                       # 图片限制（默认 10MB）
-        record: 10MB                      # 语音限制（默认 10MB）
-        video: 10MB                       # 视频限制（默认 10MB）
-        file: 10MB                        # 文件限制（默认 10MB）
+        image: 10MB                     # 图片限制（默认 10MB）
+        record: 10MB                    # 语音限制（默认 10MB）
+        video: 10MB                     # 视频限制（默认 10MB）
+        file: 10MB                      # 文件限制（默认 10MB）
 
       # ── 长消息处理 ──
-      merge_forward_threshold: 800        # 群聊超过此字数触发合并转发（默认 800，私聊不触发）
-      forward_name: "纳西妲"              # 合并转发显示的名字（默认 纳西妲）
+      merge_forward_threshold: 800      # 群聊超过此字数触发合并转发（默认 800，私聊不触发）
+      forward_name: "纳西妲"            # 合并转发显示的名字（默认 纳西妲）
 
       # ── 引用回复 ──
-      reply_text_max_length: 50           # 解析引用回复消息的最大字数，超出截断用省略号（默认 50）
-                                           # 截断时会保留完整的媒体标签（如 [图片:file=...]），不会在标签中间截断
+      reply_text_max_length: 50         # 解析引用回复消息的最大字数，超出截断用省略号（默认 50）
+                                         # 截断时会保留完整的媒体标签（如 [图片:file=...]），不会在标签中间截断
 
       # ── 关键词触发 ──
       # 群聊中匹配这些正则时自动响应（不区分大小写）
@@ -140,46 +140,21 @@ platforms:
         - "帮我"
 
       # ── 用户白名单 ──
-      # 支持字符串（逗号分隔）、列表、或裸数字
-      # 为空或不设置 → 拒绝所有用户
-      # 设置为 "all" 或 "*" → 允许所有用户
-      allowed_qq_ids: "123456,789012"
+      # 为空或不设置则拒绝所有用户
+      # 设置为 "all" 或 "*" 则允许所有用户
+      allowed_qq_ids: "123456,789012"   # 逗号分隔、列表、裸数字均可
 
       # ── 表情回应 ──
-      emoji_react: false                  # 收到消息后随机回应表情（默认 false）
+      emoji_react: false                # 收到消息后随机回应表情（默认 false）
 ```
 
-## 环境变量
+## 环境变量 (可选)
 
-所有配置项都可以通过环境变量覆盖。环境变量名 = `NAPCAT_` + 配置键名大写。
+所有配置项都可以通过环境变量覆盖。变量名 = `NAPCAT_` + 配置键名大写。
 
-**优先级**：环境变量 > config.yaml 中的 extra 配置 > 默认值
+优先级：环境变量 > config.yaml > 默认值
 
-环境变量值的解析逻辑：
-1. 先尝试 JSON 解析（数字、布尔、列表、字典等都能正确处理）
-2. JSON 失败时识别常见布尔关键词：`off/false/no/n` → False，`on/true/yes/y` → True
-3. 其他情况原样返回字符串
-
-| 环境变量 | 对应配置键 | 说明 |
-|----------|-----------|------|
-| `NAPCAT_REVERSE_HOST` | reverse_host | 监听地址 |
-| `NAPCAT_REVERSE_PORT` | reverse_port | 监听端口（整数） |
-| `NAPCAT_ACCESS_TOKEN` | access_token | WS 访问令牌 |
-| `NAPCAT_REVERSE_TOKEN` | reverse_token | WS 令牌别名（access_token 优先） |
-| `NAPCAT_HTTP_API_URL` | http_api_url | HTTP API 地址 |
-| `NAPCAT_HTTP_API_TOKEN` | http_api_token | HTTP 令牌（默认同 access_token） |
-| `NAPCAT_EMOJI_REACT` | emoji_react | 表情回应开关（布尔） |
-| `NAPCAT_BOT_SELF_ID` | bot_self_id | 机器人 QQ 号 |
-| `NAPCAT_DOWNLOAD_LIMITS` | download_limits | 下载限制（JSON 字典） |
-| `NAPCAT_MERGE_FORWARD_THRESHOLD` | merge_forward_threshold | 合并转发阈值（整数） |
-| `NAPCAT_FORWARD_NAME` | forward_name | 合并转发昵称 |
-| `NAPCAT_REPLY_TEXT_MAX_LENGTH` | reply_text_max_length | 引用文本最大字数（整数） |
-| `NAPCAT_MENTION_PATTERNS` | mention_patterns | 关键词正则（JSON 数组或逗号分隔） |
-| `NAPCAT_ALLOWED_QQ_IDS` | allowed_qq_ids | 用户白名单（字符串/列表/裸数字） |
-| `NAPCAT_ALLOWED_USERS` | — | 白名单别名（仅在 config 未设 allowed_qq_ids 时生效） |
-| `NAPCAT_ALLOW_ALL_USERS` | — | 允许所有用户（适配器注册层处理，设为 true 跳过白名单） |
-
-示例：
+值的解析：先尝试 JSON（数字、布尔、列表、字典均支持），再识别布尔关键词（`off/false/no` → False，`on/true/yes` → True），其余原样返回字符串。
 
 ```bash
 # 基本配置
@@ -187,6 +162,7 @@ NAPCAT_REVERSE_HOST=127.0.0.1
 NAPCAT_REVERSE_PORT=6700
 NAPCAT_ACCESS_TOKEN=your_token
 NAPCAT_HTTP_API_URL=http://127.0.0.1:5700
+NAPCAT_HTTP_API_TOKEN=your_http_token
 NAPCAT_BOT_SELF_ID=123456789
 
 # 布尔值（以下写法等价）
@@ -208,6 +184,12 @@ NAPCAT_MENTION_PATTERNS=纳猫,帮我
 NAPCAT_ALLOWED_QQ_IDS=123456,789012
 NAPCAT_ALLOWED_QQ_IDS='[123, 456]'        # JSON 数组也行
 NAPCAT_ALLOWED_QQ_IDS=123456              # 单个裸数字也行
+
+# 白名单别名（仅在 config 未设 allowed_qq_ids 时生效）
+NAPCAT_ALLOWED_USERS=123456,789012
+
+# 允许所有用户（设置为 true 时跳过白名单）
+NAPCAT_ALLOW_ALL_USERS=false
 ```
 
 ## NapCat 端配置
@@ -229,9 +211,9 @@ NAPCAT_ALLOWED_QQ_IDS=123456              # 单个裸数字也行
 
 ## 启动信息
 
-Hermes 默认日志级别为 WARNING，`logger.info()` 的输出用户通常看不到，容易误以为插件没加载。因此关键信息在 `logger.info()` 之外同时用 `print()` 直接输出到终端。
+Hermes 默认日志级别为 WARNING，`logger.info()` 用户看不到，容易误以为插件没加载。因此不频繁的重要 info 日志（连接/断开/启动/异常）同时 `print()` 到终端；频繁的（收发消息）不加 print。
 
-启动时会输出配置摘要，便于排查问题：
+启动时会输出配置摘要，便于排查：
 
 ```
 [NapCat插件] 反向WS模式启动，等待 NapCat 连接 端口 6700
@@ -243,8 +225,6 @@ Hermes 默认日志级别为 WARNING，`logger.info()` 的输出用户通常看�
 [NapCat插件] 配置: 下载限制={'image': '10MB', 'record': '10MB', 'video': '10MB', 'file': '10MB'}
 [NapCat插件] 配置: 关键词触发模式数=2
 ```
-
-WS 连接和断开时也会 print 到终端，不频繁的重要 info 日志（连接/断开/启动/异常）同时 print 以防 WARNING 级别看不到。
 
 ## 卸载
 
@@ -273,15 +253,12 @@ v3.0.0 是对 v2.1.x 的重构升级，功能逻辑一致，以下为详细差�
 ### 配置类型校验
 
 - **旧**：`extra_config.get()` + `os.getenv()` 简单回退，无类型检查，错误输入静默通过
-- **新**：`获取配置()` 辅助函数，每个字段做 `isinstance` 类型校验，不合法时抛 `ValueError` 并给出详细错误信息（包含字段名、期望类型、实际类型和值）
+- **新**：`获取配置()` 辅助函数，每个字段做 `isinstance` 类型校验，不合法时抛 `ValueError` 并给出详细错误信息
 
 ### 环境变量读取
 
-- **旧**：配置项直接从 `os.getenv()` 取值，只处理字符串，环境变量和配置文件两套独立逻辑
-- **新**：统一走 `获取配置()` 函数，环境变量名 = `NAPCAT_` + 配置键大写，解析顺序：
-  1. JSON 解析（数字 `123`、布尔 `true`、列表 `[1,2]`、字典 `{"k":"v"}` 都能正确处理）
-  2. 布尔关键词识别（`off/false/no/n` → `False`，`on/true/yes/y` → `True`）
-  3. 原样返回字符串
+- **旧**：直接从 `os.getenv()` 取值，只处理字符串，环境变量和配置文件两套独立逻辑
+- **新**：统一走 `获取配置()` 函数，支持 JSON 解析 + 布尔关键词识别 + 字符串回退
 
 ### 安全性
 
@@ -291,54 +268,17 @@ v3.0.0 是对 v2.1.x 的重构升级，功能逻辑一致，以下为详细差�
 | 白名单为空 | 隐式允许所有用户 | 拒绝所有用户，启动时打印警告 |
 | 允许所有用户 | 无显式机制 | 需设置 `"all"` 或 `"*"` 才放行 |
 
-### 私聊会话ID格式
+### 其他变更
 
-- **旧**：`napcat_{用户ID}`
-- **新**：`napcat_private_{用户ID}`（更明确，不易与群聊混淆）
-
-### 全局状态
-
-- **旧**：有 `_全局接口调用器` 全局变量 + `获取全局接口调用器()` 函数，外部工具可访问
-- **新**：移除全局引用，WS 实例由适配器持有，无外部全局访问
-
-### WS API 超时
-
-- **旧**：60 秒默认
-- **新**：120 秒默认（适配大文件获取等慢操作）
-
-### WS 事件过滤
-
-- **旧**：忽略 `post_type == "meta"`
-- **新**：忽略 `post_type == "meta_event"`（OneBot v11 标准字段名）
-
-### 白名单解析
-
-- **旧**：仅支持字符串（逗号分隔）和列表
-- **新**：额外支持 `int`/`float`（YAML 裸数字如 `allowed_qq_ids: 204676209` 自动转为字符串）
-
-### HTTP API 令牌
-
-- **旧**：HTTP API 和 WS 共用 `access_token`，无独立令牌配置
-- **新**：新增 `http_api_token` 配置项，默认回退到 `access_token`，可独立设置
-
-### 启动信息输出
-
-- **旧**：仅 `logger.info()` 输出，Hermes 默认 WARNING 级日志，info 用户看不到
-- **新**：Hermes 默认日志级别为 WARNING，`logger.info()` 用户看不到，容易误以为插件没加载。因此不频繁的重要 info 日志（连接/断开/启动/异常）同时 `print()` 到终端；频繁的日志（收发消息）不加 print
-
-### 消息段解析重构
-
-- **旧**：`构建完整文本()` 内联所有分支逻辑
-- **新**：拆分为 `_格式化媒体标签()`、`_格式化文件标签()`、`_追加详细艾特文本()` 三个辅助函数
-
-### show_qq_id 配置
-
-- **旧**：有 `show_qq_id` 配置项，控制显示名称是否带 QQ 号
-- **新**：移除该选项，显示名称固定为 `昵称(QQ号)` 格式
-
-### 配置项别名
-
-- **新**：`reverse_token` 作为 `access_token` 的别名（优先级低于 `access_token`）
-- **新**：`NAPCAT_ALLOWED_USERS` 作为 `NAPCAT_ALLOWED_QQ_IDS` 的备用环境变量（仅在 config 未设 `allowed_qq_ids` 时生效）
+- **私聊会话ID**：`napcat_{用户ID}` → `napcat_private_{用户ID}`
+- **全局状态**：移除 `_全局接口调用器` 全局变量，WS 实例由适配器持有
+- **WS API 超时**：60s → 120s（适配大文件获取等慢操作）
+- **WS 事件过滤**：`post_type == "meta"` → `"meta_event"`（OneBot v11 标准字段名）
+- **白名单解析**：新增 `int`/`float` 支持（YAML 裸数字自动转字符串）
+- **HTTP API 令牌**：新增 `http_api_token`，默认回退到 `access_token`
+- **启动信息**：不频繁的重要 info 日志同时 `print()` 到终端（Hermes 默认 WARNING 级，info 不可见）
+- **消息段解析**：`构建完整文本()` 拆分为 `_格式化媒体标签()`、`_格式化文件标签()`、`_追加详细艾特文本()`
+- **show_qq_id**：移除该选项，显示名称固定为 `昵称(QQ号)` 格式
+- **配置项别名**：`reverse_token` 作为 `access_token` 别名；`NAPCAT_ALLOWED_USERS` 作为白名单备用环境变量
 
 </details>
