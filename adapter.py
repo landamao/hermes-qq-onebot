@@ -1,11 +1,11 @@
 """
 NapCat QQ 适配器 — 注册到 Hermes 插件系统。
-实际适配器实现在 napcat_adapter.py 中。
+实际适配器实现在 main.py 中。
 """
 
 import logging
 
-日志 = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def _检查依赖() -> bool:
@@ -29,13 +29,13 @@ def _是否已连接(配置) -> bool:
 
 def register(ctx):
     """插件入口 — 由 Hermes 插件系统调用。"""
-    from .napcat_adapter import NapCat适配器, 检查依赖
+    from .main import NapCat适配器
 
     ctx.register_platform(
         name="napcat",
         label="NapCat (QQ)",
         adapter_factory=lambda 配置: NapCat适配器(配置),
-        check_fn=检查依赖,
+        check_fn=_检查依赖,
         validate_config=_验证配置,
         is_connected=_是否已连接,
         required_env=[],
